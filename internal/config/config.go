@@ -61,11 +61,23 @@ func Load() (*Config, error) {
 	log.Printf("DB_USER: %s", viper.GetString("DB_USER"))
 	log.Printf("DB_PASSWORD: %s", viper.GetString("DB_PASSWORD"))
 	log.Printf("DB_NAME: %s", viper.GetString("DB_NAME"))
+	log.Printf("SERVER_PORT: %s", viper.GetString("SERVER_PORT"))
+	log.Printf("GIN_MODE: %s", viper.GetString("GIN_MODE"))
 
 	var config Config
 	if err := viper.Unmarshal(&config); err != nil {
 		return nil, err
 	}
+
+	// Отладка: выводим значения из структуры
+	log.Printf("Config DB_HOST: %s", config.Database.Host)
+	log.Printf("Config DB_USER: %s", config.Database.User)
+	log.Printf("Config DB_PASSWORD: %s", config.Database.Password)
+	log.Printf("Config DB_NAME: %s", config.Database.Name)
+	log.Printf("Config DB_PORT: %s", config.Database.Port)
+	log.Printf("Config DB_SSLMODE: %s", config.Database.SSLMode)
+	log.Printf("Config SERVER_PORT: %s", config.Server.Port)
+	log.Printf("Config GIN_MODE: %s", config.Server.Mode)
 
 	return &config, nil
 }

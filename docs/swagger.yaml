@@ -1,0 +1,570 @@
+basePath: /
+definitions:
+  models.AgeRating:
+    enum:
+    - 6+
+    - 12+
+    - 16+
+    - 18+
+    type: string
+    x-enum-varnames:
+    - AgeRating6
+    - AgeRating12
+    - AgeRating16
+    - AgeRating18
+  models.CreateBookRequest:
+    properties:
+      age_rating:
+        $ref: '#/definitions/models.AgeRating'
+      author:
+        maxLength: 255
+        type: string
+      author_country:
+        type: string
+      cover_url:
+        type: string
+      description:
+        type: string
+      genres:
+        items:
+          type: string
+        type: array
+      original_title:
+        type: string
+      pages_count:
+        minimum: 1
+        type: integer
+      tags:
+        items:
+          type: string
+        type: array
+      title:
+        maxLength: 255
+        type: string
+      year:
+        type: integer
+    required:
+    - author
+    - description
+    - pages_count
+    - title
+    type: object
+  models.CreateUserRequest:
+    properties:
+      password:
+        minLength: 6
+        type: string
+      username:
+        maxLength: 50
+        minLength: 3
+        type: string
+    required:
+    - password
+    - username
+    type: object
+  models.LoginRequest:
+    properties:
+      password:
+        type: string
+      username:
+        type: string
+    required:
+    - password
+    - username
+    type: object
+  models.UpdateBookRequest:
+    properties:
+      age_rating:
+        $ref: '#/definitions/models.AgeRating'
+      author:
+        type: string
+      author_country:
+        type: string
+      cover_url:
+        type: string
+      description:
+        type: string
+      genres:
+        items:
+          type: string
+        type: array
+      original_title:
+        type: string
+      pages_count:
+        type: integer
+      tags:
+        items:
+          type: string
+        type: array
+      title:
+        type: string
+      verification_type:
+        $ref: '#/definitions/models.VerificationType'
+      verified:
+        type: boolean
+      year:
+        type: integer
+    type: object
+  models.UpdateUserRequest:
+    properties:
+      avatar_url:
+        type: string
+      role:
+        $ref: '#/definitions/models.UserRole'
+      username:
+        type: string
+    type: object
+  models.UserRole:
+    enum:
+    - user
+    - moderator
+    - admin
+    type: string
+    x-enum-varnames:
+    - UserRoleUser
+    - UserRoleModerator
+    - UserRoleAdmin
+  models.VerificationType:
+    enum:
+    - AI
+    - Community
+    type: string
+    x-enum-varnames:
+    - VerificationTypeAI
+    - VerificationTypeCommunity
+host: localhost:8080
+info:
+  contact:
+    email: support@swagger.io
+    name: API Support
+    url: http://www.swagger.io/support
+  description: API документация для платформы Book Vision - социальная платформа для
+    чтения книг
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  termsOfService: http://swagger.io/terms/
+  title: Book Vision Go API
+  version: "1.0"
+paths:
+  /api/auth/login:
+    post:
+      consumes:
+      - application/json
+      description: Аутентификация пользователя и получение JWT токена
+      parameters:
+      - description: Данные для входа
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.LoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Вход в систему
+      tags:
+      - auth
+  /api/auth/logout:
+    post:
+      description: Выход пользователя (токен должен быть удален на клиенте)
+      parameters:
+      - description: Bearer токен
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Выход из системы
+      tags:
+      - auth
+  /api/auth/profile:
+    get:
+      description: Получение информации о текущем аутентифицированном пользователе
+      parameters:
+      - description: Bearer токен
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Получение профиля
+      tags:
+      - auth
+    put:
+      consumes:
+      - application/json
+      description: Обновление информации о текущем пользователе
+      parameters:
+      - description: Bearer токен
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Данные для обновления
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.UpdateUserRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Обновление профиля
+      tags:
+      - auth
+  /api/auth/refresh:
+    post:
+      consumes:
+      - application/json
+      description: Получение нового JWT токена на основе существующего
+      parameters:
+      - description: Bearer токен
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Обновление токена
+      tags:
+      - auth
+  /api/auth/register:
+    post:
+      consumes:
+      - application/json
+      description: Создание нового аккаунта пользователя
+      parameters:
+      - description: Данные для регистрации
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.CreateUserRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "409":
+          description: Conflict
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Регистрация пользователя
+      tags:
+      - auth
+  /api/books:
+    get:
+      description: Получение каталога книг с фильтрацией
+      parameters:
+      - description: Фильтр по жанру
+        in: query
+        name: genre
+        type: string
+      - description: Фильтр по автору
+        in: query
+        name: author
+        type: string
+      - description: Фильтр по году
+        in: query
+        name: year
+        type: integer
+      - description: Минимальный рейтинг
+        in: query
+        name: min_rating
+        type: number
+      - description: Только верифицированные
+        in: query
+        name: verified
+        type: boolean
+      - description: Поиск по названию
+        in: query
+        name: search
+        type: string
+      - default: 20
+        description: Лимит
+        in: query
+        name: limit
+        type: integer
+      - default: 0
+        description: Смещение
+        in: query
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Получение списка книг
+      tags:
+      - books
+    post:
+      consumes:
+      - application/json
+      description: Создание новой книги в каталоге
+      parameters:
+      - description: Bearer токен
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Данные книги
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.CreateBookRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "403":
+          description: Forbidden
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Создание книги
+      tags:
+      - books
+  /api/books/{id}:
+    delete:
+      description: Удаление книги из каталога
+      parameters:
+      - description: Bearer токен
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: ID книги
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "403":
+          description: Forbidden
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Удаление книги
+      tags:
+      - books
+    get:
+      description: Получение детальной информации о книге
+      parameters:
+      - description: ID книги
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Получение книги
+      tags:
+      - books
+    put:
+      consumes:
+      - application/json
+      description: Обновление информации о книге
+      parameters:
+      - description: Bearer токен
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: ID книги
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Данные для обновления
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.UpdateBookRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "403":
+          description: Forbidden
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Обновление книги
+      tags:
+      - books
+  /api/books/{id}/parts:
+    get:
+      description: Получение списка глав/частей книги
+      parameters:
+      - description: ID книги
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Получение частей книги
+      tags:
+      - books
+  /api/books/{id}/parts/{partId}:
+    get:
+      description: Получение информации о конкретной главе/части
+      parameters:
+      - description: ID книги
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: ID части
+        in: path
+        name: partId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Получение части книги
+      tags:
+      - books
+schemes:
+- http
+- https
+swagger: "2.0"
