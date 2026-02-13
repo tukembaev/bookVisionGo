@@ -61,8 +61,12 @@ func (j *JWTUtils) GenerateToken(user *models.User) (string, error) {
 
 // ValidateToken - валидация JWT токена
 func (j *JWTUtils) ValidateToken(tokenString string) (*Claims, error) {
+	fmt.Printf("DEBUG: Validating token: %s\n", tokenString)
+	fmt.Printf("DEBUG: Using secret key: %s\n", j.secretKey)
+
 	// Парсинг токена
 	token, err := jwt.ParseWithClaims(tokenString, &Claims{}, func(token *jwt.Token) (interface{}, error) {
+		fmt.Printf("DEBUG: Token method: %v\n", token.Method)
 		// Проверка метода подписи
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
@@ -71,20 +75,24 @@ func (j *JWTUtils) ValidateToken(tokenString string) (*Claims, error) {
 	})
 
 	if err != nil {
+		fmt.Printf("DEBUG: Parse error: %v\n", err)
 		return nil, fmt.Errorf("failed to parse token: %w", err)
 	}
 
 	// Проверка валидности токена
 	if !token.Valid {
+		fmt.Printf("DEBUG: Token is invalid\n")
 		return nil, fmt.Errorf("invalid token")
 	}
 
 	// Извлечение claims
 	claims, ok := token.Claims.(*Claims)
 	if !ok {
+		fmt.Printf("DEBUG: Invalid claims\n")
 		return nil, fmt.Errorf("invalid token claims")
 	}
 
+	fmt.Printf("DEBUG: Token validated successfully for user: %s\n", claims.Username)
 	return claims, nil
 }
 

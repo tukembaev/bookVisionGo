@@ -34,6 +34,7 @@ func (s *AuthService) Register(ctx context.Context, req *models.CreateUserReques
 	// Создание нового пользователя
 	user := &models.User{
 		Username:     req.Username,
+		Email:        req.Email,
 		PasswordHash: req.Password, // Будет захеширован в репозитории
 		Role:         models.UserRoleUser,
 	}

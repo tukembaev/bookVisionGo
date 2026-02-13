@@ -37,6 +37,7 @@ func (ur *UserRole) Scan(value interface{}) error {
 type User struct {
 	ID                 string    `json:"id" db:"id"`
 	Username           string    `json:"username" db:"username"`
+	Email              string    `json:"email" db:"email"`
 	PasswordHash       string    `json:"-" db:"password_hash"` // "-" не включать в JSON
 	AvatarURL          *string   `json:"avatar_url" db:"avatar_url"`
 	Role               UserRole  `json:"role" db:"role"`
@@ -51,6 +52,7 @@ type User struct {
 // CreateUserRequest - DTO для регистрации пользователя
 type CreateUserRequest struct {
 	Username string `json:"username" binding:"required,min=3,max=50"`
+	Email    string `json:"email" binding:"required,email"`
 	Password string `json:"password" binding:"required,min=6"`
 }
 
@@ -71,6 +73,7 @@ type UpdateUserRequest struct {
 type UserResponse struct {
 	ID                 string    `json:"id"`
 	Username           string    `json:"username"`
+	Email              string    `json:"email"`
 	AvatarURL          *string   `json:"avatar_url"`
 	Role               UserRole  `json:"role"`
 	CreatedAt          time.Time `json:"created_at"`
@@ -86,6 +89,7 @@ func (u *User) ToResponse() *UserResponse {
 	return &UserResponse{
 		ID:                 u.ID,
 		Username:           u.Username,
+		Email:              u.Email,
 		AvatarURL:          u.AvatarURL,
 		Role:               u.Role,
 		CreatedAt:          u.CreatedAt,

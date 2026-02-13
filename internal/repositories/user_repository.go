@@ -30,9 +30,9 @@ func NewUserRepository(db *pgxpool.Pool) interfaces.UserRepository {
 // Create - создание нового пользователя
 func (r *userRepository) Create(ctx context.Context, user *models.User) error {
 	query := `
-		INSERT INTO users (id, username, password_hash, avatar_url, role, created_at, 
+		INSERT INTO users (id, username, email, password_hash, avatar_url, role, created_at, 
 		                  books_read, reviews_count, likes_received, profile_visibility, activity_visibility)
-		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
 	`
 
 	// Генерация UUID если не задан
@@ -57,6 +57,7 @@ func (r *userRepository) Create(ctx context.Context, user *models.User) error {
 	_, err = r.db.Exec(ctx, query,
 		user.ID,
 		user.Username,
+		user.Email,
 		string(hashedPassword),
 		user.AvatarURL,
 		user.Role,
@@ -79,7 +80,7 @@ func (r *userRepository) Create(ctx context.Context, user *models.User) error {
 // GetByID - получение пользователя по ID
 func (r *userRepository) GetByID(ctx context.Context, id string) (*models.User, error) {
 	query := `
-		SELECT id, username, password_hash, avatar_url, role, created_at,
+		SELECT id, username, email, password_hash, avatar_url, role, created_at,
 			   books_read, reviews_count, likes_received, profile_visibility, activity_visibility
 		FROM users 
 		WHERE id = $1
@@ -89,6 +90,7 @@ func (r *userRepository) GetByID(ctx context.Context, id string) (*models.User, 
 	err := r.db.QueryRow(ctx, query, id).Scan(
 		&user.ID,
 		&user.Username,
+		&user.Email,
 		&user.PasswordHash,
 		&user.AvatarURL,
 		&user.Role,
@@ -113,7 +115,7 @@ func (r *userRepository) GetByID(ctx context.Context, id string) (*models.User, 
 // GetByUsername - получение пользователя по username
 func (r *userRepository) GetByUsername(ctx context.Context, username string) (*models.User, error) {
 	query := `
-		SELECT id, username, password_hash, avatar_url, role, created_at,
+		SELECT id, username, email, password_hash, avatar_url, role, created_at,
 			   books_read, reviews_count, likes_received, profile_visibility, activity_visibility
 		FROM users 
 		WHERE username = $1
@@ -123,6 +125,7 @@ func (r *userRepository) GetByUsername(ctx context.Context, username string) (*m
 	err := r.db.QueryRow(ctx, query, username).Scan(
 		&user.ID,
 		&user.Username,
+		&user.Email,
 		&user.PasswordHash,
 		&user.AvatarURL,
 		&user.Role,
@@ -194,7 +197,7 @@ func (r *userRepository) Delete(ctx context.Context, id string) error {
 // List - получение списка пользователей с пагинацией
 func (r *userRepository) List(ctx context.Context, limit, offset int) ([]*models.User, error) {
 	query := `
-		SELECT id, username, password_hash, avatar_url, role, created_at,
+		SELECT id, username, email, password_hash, avatar_url, role, created_at,
 			   books_read, reviews_count, likes_received, profile_visibility, activity_visibility
 		FROM users 
 		ORDER BY created_at DESC
@@ -213,6 +216,7 @@ func (r *userRepository) List(ctx context.Context, limit, offset int) ([]*models
 		err := rows.Scan(
 			&user.ID,
 			&user.Username,
+			&user.Email,
 			&user.PasswordHash,
 			&user.AvatarURL,
 			&user.Role,

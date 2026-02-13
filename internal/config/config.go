@@ -55,6 +55,7 @@ func Load() (*Config, error) {
 	viper.SetDefault("DB_PORT", "5432")
 	viper.SetDefault("DB_SSLMODE", "disable")
 	viper.SetDefault("JWT_EXPIRES_IN", 24)
+	viper.SetDefault("JWT_SECRET", "your-secret-key-change-in-production")
 
 	// Отладка: выводим загруженные значения
 	log.Printf("DB_HOST: %s", viper.GetString("DB_HOST"))
@@ -63,6 +64,8 @@ func Load() (*Config, error) {
 	log.Printf("DB_NAME: %s", viper.GetString("DB_NAME"))
 	log.Printf("SERVER_PORT: %s", viper.GetString("SERVER_PORT"))
 	log.Printf("GIN_MODE: %s", viper.GetString("GIN_MODE"))
+	log.Printf("JWT_SECRET: %s", viper.GetString("JWT_SECRET"))
+	log.Printf("JWT_EXPIRES_IN: %d", viper.GetInt("JWT_EXPIRES_IN"))
 
 	var config Config
 	if err := viper.Unmarshal(&config); err != nil {

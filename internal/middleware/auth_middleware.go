@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"fmt"
 	"net/http"
 	"strings"
 
@@ -22,17 +23,18 @@ func AuthMiddleware(authService *services.AuthService) gin.HandlerFunc {
 		}
 
 		// Проверка формата Bearer token
-		const bearerPrefix = "Bearer "
-		if !strings.HasPrefix(authHeader, bearerPrefix) {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": "Authorization header format must be Bearer {token}"})
-			c.Abort()
-			return
-		}
+		// const bearerPrefix = "Bearer "
+		// if !strings.HasPrefix(authHeader, bearerPrefix) {
+		// 	c.JSON(http.StatusUnauthorized, gin.H{"error": "Authorization header format must be Bearer {token}"})
+		// 	c.Abort()
+		// 	return
+		// }
 
-		tokenString := authHeader[len(bearerPrefix):]
+		// tokenString := authHeader[len(bearerPrefix):]
 
 		// Валидация токена
-		claims, err := authService.ValidateToken(tokenString)
+		fmt.Println("AuthHeader:", authHeader)
+		claims, err := authService.ValidateToken(authHeader)
 		if err != nil {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token"})
 			c.Abort()
