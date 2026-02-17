@@ -16,25 +16,16 @@ func AuthMiddleware(authService *services.AuthService) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		// Извлечение токена из заголовка
 		authHeader := c.GetHeader("Authorization")
-		if authHeader == "" {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": "Authorization header is required"})
+		tokenString, err := utils.ExtractTokenFromHeader(authHeader)
+		if err != nil {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
 			c.Abort()
 			return
 		}
 
-		// Проверка формата Bearer token
-		// const bearerPrefix = "Bearer "
-		// if !strings.HasPrefix(authHeader, bearerPrefix) {
-		// 	c.JSON(http.StatusUnauthorized, gin.H{"error": "Authorization header format must be Bearer {token}"})
-		// 	c.Abort()
-		// 	return
-		// }
-
-		// tokenString := authHeader[len(bearerPrefix):]
-
 		// Валидация токена
 		fmt.Println("AuthHeader:", authHeader)
-		claims, err := authService.ValidateToken(authHeader)
+		claims, err := authService.ValidateToken(tokenString)
 		if err != nil {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token"})
 			c.Abort()

@@ -1,12 +1,14 @@
 package handlers
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 	"github.com/tukembaev/bookVisionGo/internal/middleware"
 	"github.com/tukembaev/bookVisionGo/internal/models"
 	"github.com/tukembaev/bookVisionGo/internal/services"
+	"github.com/tukembaev/bookVisionGo/internal/utils"
 )
 
 // AuthHandler - обработчики аутентификации
@@ -93,21 +95,15 @@ func (h *AuthHandler) Login(c *gin.Context) {
 // @Param Authorization header string true "Bearer токен"
 // @Success 200 {object} map[string]interface{}
 // @Failure 401 {object} map[string]interface{}
+// @Security BearerAuth
 // @Router /api/auth/refresh [post]
 func (h *AuthHandler) RefreshToken(c *gin.Context) {
 	authHeader := c.GetHeader("Authorization")
-	if authHeader == "" {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Authorization header is required"})
+	tokenString, err := utils.ExtractTokenFromHeader(authHeader)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
 		return
 	}
-
-	const bearerPrefix = "Bearer "
-	if len(authHeader) <= len(bearerPrefix) || authHeader[:len(bearerPrefix)] != bearerPrefix {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Authorization header format must be Bearer {token}"})
-		return
-	}
-
-	tokenString := authHeader[len(bearerPrefix):]
 	newToken, err := h.authService.RefreshToken(tokenString)
 	if err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token"})
@@ -127,9 +123,13 @@ func (h *AuthHandler) RefreshToken(c *gin.Context) {
 // @Param Authorization header string true "Bearer токен"
 // @Success 200 {object} map[string]interface{}
 // @Failure 401 {object} map[string]interface{}
+// @Security BearerAuth
 // @Router /api/auth/profile [get]
 func (h *AuthHandler) GetProfile(c *gin.Context) {
 	currentUser := middleware.GetCurrentUser(c)
+
+	fmt.Println(currentUser)
+
 	if currentUser == nil {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated"})
 		return
@@ -157,6 +157,7 @@ func (h *AuthHandler) GetProfile(c *gin.Context) {
 // @Success 200 {object} map[string]interface{}
 // @Failure 400 {object} map[string]interface{}
 // @Failure 401 {object} map[string]interface{}
+// @Security BearerAuth
 // @Router /api/auth/profile [put]
 func (h *AuthHandler) UpdateProfile(c *gin.Context) {
 	currentUser := middleware.GetCurrentUser(c)
@@ -189,11 +190,14 @@ func (h *AuthHandler) UpdateProfile(c *gin.Context) {
 // @Produce json
 // @Param Authorization header string true "Bearer токен"
 // @Success 200 {object} map[string]interface{}
+// @Security BearerAuth
 // @Router /api/auth/logout [post]
 func (h *AuthHandler) Logout(c *gin.Context) {
 	// В stateless JWT системе logout обрабатывается на клиенте
 	// Здесь можно добавить логику для blacklisting токенов если нужно
+
 	c.JSON(http.StatusOK, gin.H{
 		"message": "Logged out successfully",
 	})
+
 }

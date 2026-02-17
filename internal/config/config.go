@@ -68,7 +68,13 @@ func Load() (*Config, error) {
 	log.Printf("JWT_EXPIRES_IN: %d", viper.GetInt("JWT_EXPIRES_IN"))
 
 	var config Config
-	if err := viper.Unmarshal(&config); err != nil {
+	if err := viper.Unmarshal(&config.Server); err != nil {
+		return nil, err
+	}
+	if err := viper.Unmarshal(&config.Database); err != nil {
+		return nil, err
+	}
+	if err := viper.Unmarshal(&config.JWT); err != nil {
 		return nil, err
 	}
 

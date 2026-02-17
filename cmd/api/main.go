@@ -34,6 +34,9 @@ import (
 // @host localhost:8080
 // @BasePath /
 // @schemes http https
+// @securityDefinitions.http BearerAuth
+// @scheme bearer
+// @bearerFormat JWT
 
 func main() {
 	// Загрузка конфигурации

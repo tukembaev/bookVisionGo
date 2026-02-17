@@ -68,6 +68,11 @@ const docTemplate = `{
         },
         "/api/auth/logout": {
             "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Выход пользователя (токен должен быть удален на клиенте)",
                 "produces": [
                     "application/json"
@@ -98,6 +103,11 @@ const docTemplate = `{
         },
         "/api/auth/profile": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Получение информации о текущем аутентифицированном пользователе",
                 "produces": [
                     "application/json"
@@ -133,6 +143,11 @@ const docTemplate = `{
                 }
             },
             "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Обновление информации о текущем пользователе",
                 "consumes": [
                     "application/json"
@@ -189,6 +204,11 @@ const docTemplate = `{
         },
         "/api/auth/refresh": {
             "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Получение нового JWT токена на основе существующего",
                 "consumes": [
                     "application/json"
@@ -349,6 +369,11 @@ const docTemplate = `{
                 }
             },
             "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Создание новой книги в каталоге",
                 "consumes": [
                     "application/json"
@@ -440,6 +465,11 @@ const docTemplate = `{
                 }
             },
             "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Обновление информации о книге",
                 "consumes": [
                     "application/json"
@@ -508,6 +538,11 @@ const docTemplate = `{
                 }
             },
             "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Удаление книги из каталога",
                 "produces": [
                     "application/json"
@@ -711,18 +746,25 @@ const docTemplate = `{
         "models.CreateUserRequest": {
             "type": "object",
             "required": [
+                "email",
                 "password",
                 "username"
             ],
             "properties": {
+                "email": {
+                    "type": "string",
+                    "example": "arif@example.com"
+                },
                 "password": {
                     "type": "string",
-                    "minLength": 6
+                    "minLength": 6,
+                    "example": "StrongP@ssw0rd"
                 },
                 "username": {
                     "type": "string",
                     "maxLength": 50,
-                    "minLength": 3
+                    "minLength": 3,
+                    "example": "arif123"
                 }
             }
         },
@@ -730,18 +772,16 @@ const docTemplate = `{
             "type": "object",
             "required": [
                 "password",
-                "username",
-                "email"
+                "username"
             ],
             "properties": {
                 "password": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "arif123"
                 },
                 "username": {
-                    "type": "string"
-                },
-                 "email": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "arif"
                 }
             }
         },
@@ -799,13 +839,20 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "avatar_url": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "https://example.com/avatar.png"
                 },
                 "role": {
-                    "$ref": "#/definitions/models.UserRole"
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/models.UserRole"
+                        }
+                    ],
+                    "example": "user"
                 },
                 "username": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "arif123"
                 }
             }
         },

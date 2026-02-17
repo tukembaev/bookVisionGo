@@ -49,24 +49,21 @@ type User struct {
 	ActivityVisibility string    `json:"activity_visibility" db:"activity_visibility"`
 }
 
-// CreateUserRequest - DTO для регистрации пользователя
 type CreateUserRequest struct {
-	Username string `json:"username" binding:"required,min=3,max=50"`
-	Email    string `json:"email" binding:"required,email"`
-	Password string `json:"password" binding:"required,min=6"`
+	Username string `json:"username" binding:"required,min=3,max=50" example:"arif123"`
+	Email    string `json:"email" binding:"required,email" example:"arif@example.com"`
+	Password string `json:"password" binding:"required,min=6" example:"StrongP@ssw0rd"`
 }
 
-// LoginRequest - DTO для входа
 type LoginRequest struct {
-	Username string `json:"username" binding:"required"`
-	Password string `json:"password" binding:"required"`
+	Username string `json:"username" binding:"required" example:"arif"`
+	Password string `json:"password" binding:"required" example:"arif123"`
 }
 
-// UpdateUserRequest - DTO для обновления пользователя
 type UpdateUserRequest struct {
-	Username  *string   `json:"username"`
-	AvatarURL *string   `json:"avatar_url"`
-	Role      *UserRole `json:"role"`
+	Username  *string   `json:"username" example:"arif123"`
+	AvatarURL *string   `json:"avatar_url" example:"https://example.com/avatar.png"`
+	Role      *UserRole `json:"role" example:"user"`
 }
 
 // UserResponse - DTO для ответа API (без пароля)

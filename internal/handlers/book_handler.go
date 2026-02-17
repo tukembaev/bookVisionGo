@@ -33,6 +33,7 @@ func NewBookHandler(bookRepo interfaces.BookRepository) *BookHandler {
 // @Success 201 {object} map[string]interface{}
 // @Failure 400 {object} map[string]interface{}
 // @Failure 403 {object} map[string]interface{}
+// @Security BearerAuth
 // @Router /api/books [post]
 func (h *BookHandler) CreateBook(c *gin.Context) {
 	var req models.CreateBookRequest
@@ -182,6 +183,7 @@ func (h *BookHandler) GetBook(c *gin.Context) {
 // @Failure 400 {object} map[string]interface{}
 // @Failure 403 {object} map[string]interface{}
 // @Failure 404 {object} map[string]interface{}
+// @Security BearerAuth
 // @Router /api/books/{id} [put]
 func (h *BookHandler) UpdateBook(c *gin.Context) {
 	id := c.Param("id")
@@ -261,6 +263,7 @@ func (h *BookHandler) UpdateBook(c *gin.Context) {
 // @Success 200 {object} map[string]interface{}
 // @Failure 403 {object} map[string]interface{}
 // @Failure 404 {object} map[string]interface{}
+// @Security BearerAuth
 // @Router /api/books/{id} [delete]
 func (h *BookHandler) DeleteBook(c *gin.Context) {
 	id := c.Param("id")

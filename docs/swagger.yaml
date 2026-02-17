@@ -51,22 +51,30 @@ definitions:
     type: object
   models.CreateUserRequest:
     properties:
+      email:
+        example: arif@example.com
+        type: string
       password:
+        example: StrongP@ssw0rd
         minLength: 6
         type: string
       username:
+        example: arif123
         maxLength: 50
         minLength: 3
         type: string
     required:
+    - email
     - password
     - username
     type: object
   models.LoginRequest:
     properties:
       password:
+        example: arif123
         type: string
       username:
+        example: arif
         type: string
     required:
     - password
@@ -108,10 +116,14 @@ definitions:
   models.UpdateUserRequest:
     properties:
       avatar_url:
+        example: https://example.com/avatar.png
         type: string
       role:
-        $ref: '#/definitions/models.UserRole'
+        allOf:
+        - $ref: '#/definitions/models.UserRole'
+        example: user
       username:
+        example: arif123
         type: string
     type: object
   models.UserRole:
@@ -192,6 +204,8 @@ paths:
           schema:
             additionalProperties: true
             type: object
+      security:
+      - BearerAuth: []
       summary: Выход из системы
       tags:
       - auth
@@ -217,6 +231,8 @@ paths:
           schema:
             additionalProperties: true
             type: object
+      security:
+      - BearerAuth: []
       summary: Получение профиля
       tags:
       - auth
@@ -254,6 +270,8 @@ paths:
           schema:
             additionalProperties: true
             type: object
+      security:
+      - BearerAuth: []
       summary: Обновление профиля
       tags:
       - auth
@@ -281,6 +299,8 @@ paths:
           schema:
             additionalProperties: true
             type: object
+      security:
+      - BearerAuth: []
       summary: Обновление токена
       tags:
       - auth
@@ -400,6 +420,8 @@ paths:
           schema:
             additionalProperties: true
             type: object
+      security:
+      - BearerAuth: []
       summary: Создание книги
       tags:
       - books
@@ -435,6 +457,8 @@ paths:
           schema:
             additionalProperties: true
             type: object
+      security:
+      - BearerAuth: []
       summary: Удаление книги
       tags:
       - books
@@ -506,6 +530,8 @@ paths:
           schema:
             additionalProperties: true
             type: object
+      security:
+      - BearerAuth: []
       summary: Обновление книги
       tags:
       - books

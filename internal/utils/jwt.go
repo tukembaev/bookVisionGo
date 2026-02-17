@@ -34,6 +34,8 @@ func NewJWTUtils(cfg *config.Config) *JWTUtils {
 // GenerateToken - генерация JWT токена
 func (j *JWTUtils) GenerateToken(user *models.User) (string, error) {
 	// Создание claims
+	fmt.Println("DEBUG: expiresIn value is:", j.expiresIn)
+
 	claims := &Claims{
 		UserID:   user.ID,
 		Username: user.Username,
@@ -103,7 +105,6 @@ func (j *JWTUtils) RefreshToken(tokenString string) (string, error) {
 	if err != nil {
 		return "", fmt.Errorf("invalid token for refresh: %w", err)
 	}
-
 	// Создание нового токена с тем же пользователем
 	newClaims := &Claims{
 		UserID:   claims.UserID,
@@ -132,7 +133,7 @@ func ExtractTokenFromHeader(authHeader string) (string, error) {
 	if authHeader == "" {
 		return "", fmt.Errorf("authorization header is required")
 	}
-
+	fmt.Println("Authorization header:", authHeader)
 	// Проверка формата "Bearer <token>"
 	const bearerPrefix = "Bearer "
 	if len(authHeader) <= len(bearerPrefix) || authHeader[:len(bearerPrefix)] != bearerPrefix {
