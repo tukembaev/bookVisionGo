@@ -29,8 +29,27 @@ func (r *BookRepository) Create(ctx context.Context, book *models.Book) error {
 
 // GetByID - получение книги по ID
 func (r *BookRepository) GetByID(ctx context.Context, id string) (*models.Book, error) {
-	// TODO: Реализовать получение книги
-	return nil, fmt.Errorf("GetByID not implemented yet")
+	query := `
+		SELECT id, title, original_title, author, year, genres, age_rating,
+			   author_country, description, cover_url, pages_count, tags,
+			   verified, verification_type, created_by, created_at,
+			   average_rating, rating_count
+		FROM books 
+		WHERE id = $1`
+
+	var book models.Book
+	err := r.pool.QueryRow(ctx, query, id).Scan(
+		&book.ID, &book.Title, &book.OriginalTitle, &book.Author, &book.Year,
+		&book.Genres, &book.AgeRating, &book.AuthorCountry, &book.Description,
+		&book.CoverURL, &book.PagesCount, &book.Tags, &book.Verified,
+		&book.VerificationType, &book.CreatedBy, &book.CreatedAt,
+		&book.AverageRating, &book.RatingCount,
+	)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get book by id: %w", err)
+	}
+
+	return &book, nil
 }
 
 // Update - обновление книги
