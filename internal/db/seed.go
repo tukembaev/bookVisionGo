@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/tukembaev/bookVisionGo/internal/models"
 )
@@ -14,7 +13,7 @@ import (
 func SeedBooks(ctx context.Context, pool *pgxpool.Pool) error {
 	books := []models.Book{
 		{
-			ID:               uuid.New().String(),
+			ID:               "b0000000-0000-0000-0000-000000000001",
 			Title:            "Отцы и дети",
 			OriginalTitle:    stringPtr("Fathers and Sons"),
 			Author:           "Иван Тургенев",
@@ -34,7 +33,7 @@ func SeedBooks(ctx context.Context, pool *pgxpool.Pool) error {
 			RatingCount:      1240,
 		},
 		{
-			ID:               uuid.New().String(),
+			ID:               "b0000000-0000-0000-0000-000000000002",
 			Title:            "Преступление и наказание",
 			Author:           "Фёдор Достоевский",
 			Year:             intPtr(1866),
@@ -53,14 +52,14 @@ func SeedBooks(ctx context.Context, pool *pgxpool.Pool) error {
 			RatingCount:      2305,
 		},
 		{
-			ID:               uuid.New().String(),
+			ID:               "b0000000-0000-0000-0000-000000000003",
 			Title:            "Мастер и Маргарита",
 			Author:           "Михаил Булгаков",
 			Year:             intPtr(1967),
 			Genres:           []string{"Роман", "Фантастика", "Философия"},
 			AgeRating:        ageRatingPtr(models.AgeRating16),
 			AuthorCountry:    stringPtr("Россия"),
-			Description:      "Сатира и мистический роман, переплетающий несколько линий и смысловых пластов.",
+			Description:      "Сатира и мистический roman, переплетающий несколько линий и смысловых пластов.",
 			CoverURL:         stringPtr("https://cdn.azbooka.ru/cv/w1100/98fa6b42-e86d-4f17-9376-25e98cc784e5.jpg"),
 			PagesCount:       410,
 			Verified:         true,
@@ -72,7 +71,7 @@ func SeedBooks(ctx context.Context, pool *pgxpool.Pool) error {
 			RatingCount:      3102,
 		},
 		{
-			ID:               uuid.New().String(),
+			ID:               "b0000000-0000-0000-0000-000000000004",
 			Title:            "Отверженные",
 			OriginalTitle:    stringPtr("Les Misérables"),
 			Author:           "Виктор Гюго",
@@ -92,7 +91,7 @@ func SeedBooks(ctx context.Context, pool *pgxpool.Pool) error {
 			RatingCount:      980,
 		},
 		{
-			ID:               uuid.New().String(),
+			ID:               "b0000000-0000-0000-0000-000000000005",
 			Title:            "Норвежский лес",
 			OriginalTitle:    stringPtr("Norwegian Wood"),
 			Author:           "Харуки Мураками",

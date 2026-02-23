@@ -103,13 +103,26 @@ type Article struct {
 	CreatedAt           time.Time         `json:"created_at" db:"created_at"`
 	Likes               int               `json:"likes" db:"likes"`
 	Views               int               `json:"views" db:"views"`
-	Rating              int               `json:"rating" db:"rating"`
 	ReadingMinutes      *int              `json:"reading_minutes" db:"reading_minutes"`
 	CoverURL            *string           `json:"cover_url" db:"cover_url"`
 	Verified            bool              `json:"verified" db:"verified"`
 	VerificationType    *VerificationType `json:"verification_type" db:"verification_type"`
 	NoSpoilers          bool              `json:"no_spoilers" db:"no_spoilers"`
-	ShouldReadReadiness ArticleReadiness  `json:"should_read_readiness" db:"should_read_readiness"`
+	ShouldReadReadiness ArticleReadiness  `json:"should_read_readiness" db:"readiness"`
+	Content             interface{}       `json:"content" db:"content"`
+}
+
+// ArticleListItem - сокращенная модель статьи для списков
+type ArticleListItem struct {
+	ID       string      `json:"id" db:"id"`
+	Title    string      `json:"title" db:"title"`
+	Type     ArticleType `json:"type" db:"type"`
+	AuthorID *string     `json:"author_id" db:"author_id"`
+	BookID   *string     `json:"book_id" db:"book_id"`
+	Excerpt  string      `json:"excerpt" db:"excerpt"`
+	Likes    int         `json:"likes" db:"likes"`
+	Views    int         `json:"views" db:"views"`
+	CoverURL *string     `json:"cover_url" db:"cover_url"`
 }
 
 // ArticleContentBlock - модель контент-блока статьи

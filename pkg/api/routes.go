@@ -13,6 +13,8 @@ func SetupRoutes(
 	r *gin.Engine,
 	authHandler *handlers.AuthHandler,
 	bookHandler *handlers.BookHandler,
+	articleHandler *handlers.ArticleHandler,
+
 	authService *services.AuthService,
 ) {
 	// Debug: проверим что handler не nil
@@ -72,6 +74,17 @@ func SetupRoutes(
 			}
 		}
 
+		// Articles
+		articles := v1.Group("/articles")
+		{
+			articles.GET("", articleHandler.GetArticles)
+			articles.GET("/:id", articleHandler.GetArticleById)
+
+			articles.POST("", middleware.RequireRole(models.UserRoleModerator), func(c *gin.Context) {
+				c.JSON(201, gin.H{"message": "Article created"})
+			})
+		}
+
 		// Users routes (защищенные)
 		users := v1.Group("/users", middleware.AuthMiddleware(authService))
 		{
@@ -114,17 +127,6 @@ func SetupRoutes(
 				})
 				reviews.POST("", func(c *gin.Context) {
 					c.JSON(201, gin.H{"message": "Review created"})
-				})
-			}
-
-			// Articles
-			articles := protected.Group("/articles")
-			{
-				articles.GET("", func(c *gin.Context) {
-					c.JSON(200, gin.H{"message": "Articles list"})
-				})
-				articles.POST("", middleware.RequireRole(models.UserRoleModerator), func(c *gin.Context) {
-					c.JSON(201, gin.H{"message": "Article created"})
 				})
 			}
 

@@ -26,7 +26,13 @@ func main() {
 	// Заполнение базы данных книгами
 	err = db.SeedBooks(context.Background(), database.GetPool())
 	if err != nil {
-		log.Fatalf("Ошибка при заполнении базы данных: %v", err)
+		log.Fatalf("Ошибка при заполнении базы данных книгами: %v", err)
+	}
+
+	// Заполнение базы данных статьями
+	err = db.SeedArticles(context.Background(), database.GetPool())
+	if err != nil {
+		log.Fatalf("Ошибка при заполнении базы данных статьями: %v", err)
 	}
 
 	fmt.Println("База данных успешно заполнена!")

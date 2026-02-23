@@ -12,6 +12,89 @@ definitions:
     - AgeRating12
     - AgeRating16
     - AgeRating18
+  models.Article:
+    properties:
+      author_id:
+        type: string
+      book_id:
+        type: string
+      content: {}
+      cover_url:
+        type: string
+      created_at:
+        type: string
+      excerpt:
+        type: string
+      id:
+        type: string
+      likes:
+        type: integer
+      no_spoilers:
+        type: boolean
+      reading_minutes:
+        type: integer
+      should_read_readiness:
+        $ref: '#/definitions/models.ArticleReadiness'
+      title:
+        type: string
+      type:
+        $ref: '#/definitions/models.ArticleType'
+      verification_type:
+        $ref: '#/definitions/models.VerificationType'
+      verified:
+        type: boolean
+      views:
+        type: integer
+    type: object
+  models.ArticleListItem:
+    properties:
+      author_id:
+        type: string
+      book_id:
+        type: string
+      cover_url:
+        type: string
+      excerpt:
+        type: string
+      id:
+        type: string
+      likes:
+        type: integer
+      title:
+        type: string
+      type:
+        $ref: '#/definitions/models.ArticleType'
+      views:
+        type: integer
+    type: object
+  models.ArticleReadiness:
+    enum:
+    - must
+    - maybe
+    - "no"
+    type: string
+    x-enum-varnames:
+    - ArticleReadinessMust
+    - ArticleReadinessMaybe
+    - ArticleReadinessNo
+  models.ArticleType:
+    enum:
+    - shouldRead
+    - analysis
+    - review
+    - collection
+    - guide
+    - comparison
+    - discussion
+    type: string
+    x-enum-varnames:
+    - ArticleTypeShouldRead
+    - ArticleTypeAnalysis
+    - ArticleTypeReview
+    - ArticleTypeCollection
+    - ArticleTypeGuide
+    - ArticleTypeComparison
+    - ArticleTypeDiscussion
   models.CreateBookRequest:
     properties:
       age_rating:
@@ -159,6 +242,81 @@ info:
   title: Book Vision Go API
   version: "1.0"
 paths:
+  /api/articles:
+    get:
+      consumes:
+      - application/json
+      description: Получение списка статей
+      parameters:
+      - description: Поле для сортировки (views, likes, created_at)
+        in: query
+        name: sort
+        type: string
+      - description: Порядок сортировки (asc, desc)
+        in: query
+        name: order
+        type: string
+      - description: Количество статей
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.ArticleListItem'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "403":
+          description: Forbidden
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Получение списка статей
+      tags:
+      - articles
+  /api/articles/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Получение статьи по ID f80b90a5-a9e3-4347-9d0c-1a8b0abdfbf2
+      parameters:
+      - description: ID статьи
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Article'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "403":
+          description: Forbidden
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Получение статьи по ID
+      tags:
+      - articles
   /api/auth/login:
     post:
       consumes:

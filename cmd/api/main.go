@@ -79,13 +79,14 @@ func main() {
 	// Репозитории
 	userRepo := repositories.NewUserRepository(database.GetPool())
 	bookRepo := repositories.NewBookRepository(database.GetPool()) // Включаем BookRepository
-
+	articleRepo := repositories.NewArticleRepository(database.GetPool())
 	// Сервисы
 	authService := services.NewAuthService(userRepo, jwtUtils)
 
 	// Handlers
 	authHandler := handlers.NewAuthHandler(authService)
-	bookHandler := handlers.NewBookHandler(bookRepo) // Настоящий handler с репозиторием
+	bookHandler := handlers.NewBookHandler(bookRepo)          // Настоящий handler с репозиторием
+	articleHandler := handlers.NewArticleHandler(articleRepo) // Настоящий handler с репозиторием
 
 	// Debug: проверим что handler не nil
 	if bookHandler == nil {
@@ -111,7 +112,7 @@ func main() {
 	// Swagger документация
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
-	api.SetupRoutes(r, authHandler, bookHandler, authService)
+	api.SetupRoutes(r, authHandler, bookHandler, articleHandler, authService)
 
 	// Запуск сервера
 	log.Printf("Server starting on port %s", port)

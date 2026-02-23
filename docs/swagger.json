@@ -22,6 +22,122 @@
     "host": "localhost:8080",
     "basePath": "/",
     "paths": {
+        "/api/articles": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Получение списка статей",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "articles"
+                ],
+                "summary": "Получение списка статей",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Поле для сортировки (views, likes, created_at)",
+                        "name": "sort",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Порядок сортировки (asc, desc)",
+                        "name": "order",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Количество статей",
+                        "name": "limit",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.ArticleListItem"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
+        "/api/articles/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Получение статьи по ID f80b90a5-a9e3-4347-9d0c-1a8b0abdfbf2",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "articles"
+                ],
+                "summary": "Получение статьи по ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID статьи",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Article"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
         "/api/auth/login": {
             "post": {
                 "description": "Аутентификация пользователя и получение JWT токена",
@@ -686,6 +802,123 @@
                 "AgeRating12",
                 "AgeRating16",
                 "AgeRating18"
+            ]
+        },
+        "models.Article": {
+            "type": "object",
+            "properties": {
+                "author_id": {
+                    "type": "string"
+                },
+                "book_id": {
+                    "type": "string"
+                },
+                "content": {},
+                "cover_url": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "excerpt": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "likes": {
+                    "type": "integer"
+                },
+                "no_spoilers": {
+                    "type": "boolean"
+                },
+                "reading_minutes": {
+                    "type": "integer"
+                },
+                "should_read_readiness": {
+                    "$ref": "#/definitions/models.ArticleReadiness"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "type": {
+                    "$ref": "#/definitions/models.ArticleType"
+                },
+                "verification_type": {
+                    "$ref": "#/definitions/models.VerificationType"
+                },
+                "verified": {
+                    "type": "boolean"
+                },
+                "views": {
+                    "type": "integer"
+                }
+            }
+        },
+        "models.ArticleListItem": {
+            "type": "object",
+            "properties": {
+                "author_id": {
+                    "type": "string"
+                },
+                "book_id": {
+                    "type": "string"
+                },
+                "cover_url": {
+                    "type": "string"
+                },
+                "excerpt": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "likes": {
+                    "type": "integer"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "type": {
+                    "$ref": "#/definitions/models.ArticleType"
+                },
+                "views": {
+                    "type": "integer"
+                }
+            }
+        },
+        "models.ArticleReadiness": {
+            "type": "string",
+            "enum": [
+                "must",
+                "maybe",
+                "no"
+            ],
+            "x-enum-varnames": [
+                "ArticleReadinessMust",
+                "ArticleReadinessMaybe",
+                "ArticleReadinessNo"
+            ]
+        },
+        "models.ArticleType": {
+            "type": "string",
+            "enum": [
+                "shouldRead",
+                "analysis",
+                "review",
+                "collection",
+                "guide",
+                "comparison",
+                "discussion"
+            ],
+            "x-enum-varnames": [
+                "ArticleTypeShouldRead",
+                "ArticleTypeAnalysis",
+                "ArticleTypeReview",
+                "ArticleTypeCollection",
+                "ArticleTypeGuide",
+                "ArticleTypeComparison",
+                "ArticleTypeDiscussion"
             ]
         },
         "models.CreateBookRequest": {
