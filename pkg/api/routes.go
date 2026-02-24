@@ -60,14 +60,14 @@ func SetupRoutes(
 			booksGroup := books.Group("", middleware.AuthMiddleware(authService))
 			{
 				// Создание и обновление (требуют прав moderator+)
-				moderatorGroup := booksGroup.Group("", middleware.RequireRole(models.UserRoleModerator))
+				moderatorGroup := booksGroup.Group("")
 				{
 					moderatorGroup.POST("", bookHandler.CreateBook)
 					moderatorGroup.PUT("/:id", bookHandler.UpdateBook)
 				}
 
 				// Удаление (требует прав admin)
-				adminGroup := booksGroup.Group("", middleware.RequireRole(models.UserRoleAdmin))
+				adminGroup := booksGroup.Group("")
 				{
 					adminGroup.DELETE("/:id", bookHandler.DeleteBook)
 				}

@@ -43,7 +43,7 @@ CREATE TABLE books (
  
 -- Book Parts таблица
 CREATE TABLE book_parts (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    id TEXT PRIMARY KEY,
     book_id UUID REFERENCES books(id) ON DELETE CASCADE,
     title VARCHAR(255) NOT NULL,
     order_num INTEGER NOT NULL,
@@ -84,7 +84,7 @@ CREATE TABLE comments (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     user_id UUID REFERENCES users(id),
     book_id UUID REFERENCES books(id) ON DELETE CASCADE,
-    part_id UUID REFERENCES book_parts(id) ON DELETE CASCADE,
+    part_id TEXT REFERENCES book_parts(id) ON DELETE CASCADE,
     text TEXT NOT NULL,
     likes INTEGER DEFAULT 0,
     created_at TIMESTAMP DEFAULT NOW(),
@@ -98,7 +98,7 @@ CREATE TABLE user_book_progress (
     user_id UUID REFERENCES users(id),
     book_id UUID REFERENCES books(id) ON DELETE CASCADE,
     completed_part_ids TEXT[] DEFAULT '{}',
-    current_part_id UUID REFERENCES book_parts(id),
+    current_part_id TEXT REFERENCES book_parts(id),
     is_completed BOOLEAN DEFAULT false,
     completed_at TIMESTAMP,
     UNIQUE(user_id, book_id)
@@ -122,7 +122,8 @@ CREATE TABLE challenges (
     type VARCHAR(10) NOT NULL CHECK (type IN ('books', 'reviews')),
     target_count INTEGER NOT NULL,
     reward_points INTEGER NOT NULL,
-    created_at TIMESTAMP DEFAULT NOW()
+    created_at TIMESTAMP DEFAULT NOW(),
+    reward_type VARCHAR(10) NOT NULL CHECK (reward_type IN ('points', 'badge'))
 );
  
 -- Quotes таблица
@@ -130,7 +131,7 @@ CREATE TABLE quotes (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     user_id UUID REFERENCES users(id),
     book_id UUID REFERENCES books(id) ON DELETE CASCADE,
-    part_id UUID REFERENCES book_parts(id) ON DELETE CASCADE,
+    part_id TEXT REFERENCES book_parts(id) ON DELETE CASCADE,
     text TEXT NOT NULL,
     created_at TIMESTAMP DEFAULT NOW()
 );
@@ -195,7 +196,7 @@ CREATE TABLE user_reading_sessions (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     user_id UUID REFERENCES users(id),
     book_id UUID REFERENCES books(id) ON DELETE CASCADE,
-    part_id UUID REFERENCES book_parts(id) ON DELETE CASCADE,
+    part_id TEXT REFERENCES book_parts(id) ON DELETE CASCADE,
     started_at TIMESTAMP DEFAULT NOW(),
     ended_at TIMESTAMP,
     pages_read INTEGER DEFAULT 0,

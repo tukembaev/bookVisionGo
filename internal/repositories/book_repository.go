@@ -23,8 +23,31 @@ func NewBookRepository(pool *pgxpool.Pool) interfaces.BookRepository {
 
 // Create - создание новой книги
 func (r *BookRepository) Create(ctx context.Context, book *models.Book) error {
-	// TODO: Реализовать создание книги
-	return fmt.Errorf("Create not implemented yet")
+	query := `
+		INSERT INTO books (
+			title, original_title, author, year, genres, age_rating,
+			author_country, description, cover_url, pages_count, tags,
+			verified, verification_type, created_by, created_at,
+			average_rating, rating_count
+		) VALUES (
+			$1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17
+		) RETURNING id`
+
+	var id string
+	err := r.pool.QueryRow(ctx, query,
+		book.Title, book.OriginalTitle, book.Author, book.Year,
+		book.Genres, book.AgeRating, book.AuthorCountry, book.Description,
+		book.CoverURL, book.PagesCount, book.Tags, book.Verified,
+		book.VerificationType, book.CreatedBy, book.CreatedAt,
+		book.AverageRating, book.RatingCount,
+	).Scan(&id)
+
+	if err != nil {
+		return fmt.Errorf("failed to create book: %w", err)
+	}
+
+	book.ID = id
+	return nil
 }
 
 // GetByID - получение книги по ID
@@ -54,14 +77,46 @@ func (r *BookRepository) GetByID(ctx context.Context, id string) (*models.Book, 
 
 // Update - обновление книги
 func (r *BookRepository) Update(ctx context.Context, book *models.Book) error {
-	// TODO: Реализовать обновление книги
-	return fmt.Errorf("Update not implemented yet")
+	query := `
+        UPDATE books SET 
+            title = $2, original_title = $3, author = $4, year = $5, genres = $6, 
+            age_rating = $7, author_country = $8, description = $9, cover_url = $10, 
+            pages_count = $11, tags = $12, verified = $13, verification_type = $14,
+            average_rating = $15, rating_count = $16
+        WHERE id = $1`
+
+	cmdTag, err := r.pool.Exec(ctx, query,
+		book.ID, book.Title, book.OriginalTitle, book.Author, book.Year,
+		book.Genres, book.AgeRating, book.AuthorCountry, book.Description,
+		book.CoverURL, book.PagesCount, book.Tags, book.Verified,
+		book.VerificationType, book.AverageRating, book.RatingCount,
+	)
+
+	if err != nil {
+		return fmt.Errorf("failed to update book: %w", err)
+	}
+
+	if cmdTag.RowsAffected() == 0 {
+		return fmt.Errorf("book with id %s not found", book.ID)
+	}
+
+	return nil
 }
 
 // Delete - удаление книги
 func (r *BookRepository) Delete(ctx context.Context, id string) error {
-	// TODO: Реализовать удаление книги
-	return fmt.Errorf("Delete not implemented yet")
+	query := `DELETE FROM books WHERE id = $1`
+
+	cmdTag, err := r.pool.Exec(ctx, query, id)
+	if err != nil {
+		return fmt.Errorf("failed to delete book: %w", err)
+	}
+
+	if cmdTag.RowsAffected() == 0 {
+		return fmt.Errorf("book with id %s not found", id)
+	}
+
+	return nil
 }
 
 // List - получение списка книг с фильтрацией и пагинацией
@@ -117,8 +172,36 @@ func (r *BookRepository) Count(ctx context.Context, filters interfaces.BookFilte
 
 // GetParts - получение частей книги
 func (r *BookRepository) GetParts(ctx context.Context, bookID string) ([]*models.BookPart, error) {
-	// TODO: Реализовать получение частей книги
-	return nil, fmt.Errorf("GetParts not implemented yet")
+	query := `
+		SELECT id, book_id, title, content, order_num, page_start, page_end, mood_tags, average_rating
+		FROM book_parts 
+		WHERE book_id = $1
+		ORDER BY order_num`
+
+	rows, err := r.pool.Query(ctx, query, bookID)
+	if err != nil {
+		return nil, fmt.Errorf("failed to query book parts: %w", err)
+	}
+	defer rows.Close()
+
+	var parts []*models.BookPart
+	for rows.Next() {
+		var part models.BookPart
+		err := rows.Scan(
+			&part.ID, &part.BookID, &part.Title, &part.Content, &part.OrderNum,
+			&part.PageStart, &part.PageEnd, &part.MoodTags, &part.AverageRating,
+		)
+		if err != nil {
+			return nil, fmt.Errorf("failed to scan book part: %w", err)
+		}
+		parts = append(parts, &part)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("error iterating book parts: %w", err)
+	}
+
+	return parts, nil
 }
 
 // GetPartByID - получение части книги по ID
